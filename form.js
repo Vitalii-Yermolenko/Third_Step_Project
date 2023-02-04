@@ -19,24 +19,18 @@ function createElementForm( node, classNode, parent){
     return element;
 }
 
-function request (url , method, data) {
-    return fetch("https://ajax.test-danit.com/api/v2/cards", {
-        method: 'POST',
+async function request (url , method, data) {
+    return await fetch(url, {
+        method: method,
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({
-          title: 'Визит к кардиологу',
-          description: 'Плановый визит',
-          doctor: 'Cardiologist',
-          bp: '24',
-          age: 23,
-          weight: 70
-        })
+        body: JSON.stringify(data)
       })
         .then(response => response.json())
-        .then(response => console.log(response))
+        // .then(data => new VisitDentist(data))
+        // .then(response => console.log(response))
 }
 
 class Modal{
@@ -121,40 +115,39 @@ class Modal{
     }
 
     createDentistBlock(parent){
-        const divDentist = createElementForm('div', 'modal-form__doctor', parent);
-        const labelDentist = createElementForm('label', 'dantist__label', divDentist);
-        labelDentist.innerText = 'Last visite to datist';
-        const inputlastVisit = createElementForm('input', 'modal-form__input-last-visite', divDentist);
-        inputlastVisit.type = 'date';
+        parent.insertAdjacentHTML('beforeend', `  <div class="modal-form__doctor dantist">
+        <label class="doctor__labe">Останній візит до стоматолога
+            <input class="last-visite__input" type="date">
+        </label>
+    </div>`)
     }
     createCardiologistBlock(parent){
-        const divCardiologist = createElementForm('div', 'modal-form__doctor', parent);
-
-        const labelMass = createElementForm('label', 'therapist__label-age', divCardiologist);
-        labelMass.innerText = `Visiter's mass`;
-        const inputMass = createElementForm('input', 'modal-form__input-mass', labelMass);
-       
-        const labelPress = createElementForm('label', 'therapist__label-age', divCardiologist);
-        labelPress.innerText = `Visiter's pressure`;
-        const inputPress = createElementForm('input', 'modal-form__input-pressure', labelPress);
-        
-        const labelDiseases = createElementForm('label', 'therapist__label-age', divCardiologist);
-        labelDiseases.innerText = `Visiter's diseases`;
-        const inputDiseases = createElementForm('input', 'modal-form__input-diseases', labelDiseases);
-
-        const labelAge = createElementForm('label', 'therapist__label-age', divCardiologist);
-        labelAge.innerText = `Visiter's age`;
-        const inputAge = createElementForm('input', 'modal-form__input-age', labelAge);
+        parent.insertAdjacentHTML('beforeend', `  <div class="modal-form__doctor dantist">
+        <label class="doctor__label">Звичний артеріальний тиск пацієнта
+            <input class="pressure__input" type="text">
+        </label>
+        <label class="doctor__label">Індекс маси тіла
+            <input class="mass__input" type="text">
+        </label>
+        <label class="doctor__label">Перенесені захворювання серцево-судинної системи
+            <input class="diseases__input" type="text">
+        </label>
+        <label class="doctor__label">Вік пацієнта
+            <input class="age__input" type="text">
+        </label>
+        </div>`)
     }
     createTherapistBlock(parent){
-        const divTherapist = createElementForm('div', 'modal-form__doctor', parent);
-        const labelAge = createElementForm('label', 'modal-form__label-age', divTherapist);
-        labelAge.innerText = `Visiter's age`;
-        const inputAge = createElementForm('input', 'modal-form__input-age', divTherapist);
+        parent.insertAdjacentHTML('beforeend', `  <div class="modal-form__doctor">
+        <label class="doctor__label">Вік пацієнта
+            <input class="age__input" type="text">
+        </label>
+    </div>`)
     }
 
-    submitBlock(parent){ 
-        let newVisite;   
+    async submitBlock(parent){ 
+        let newVisite;
+        let infoAfterRequest;
         const mainDataVisite = {};
         const submitButton = createElementForm('button', 'modal-form__button-submit', parent);
         submitButton.innerText = "Submit data";
@@ -186,22 +179,66 @@ class Modal{
 
 
             if(doctor === 'Dentist'){
-                const lastVisit = document.querySelector('.modal-form__input-last-visite').value;
+                const lastVisit = document.querySelector('.last-visite__input').value;
+                const data = {
+                    title: 'Візит до стоматолога',
+                    doctor:doctor,
+                    name: name,
+                    purpose: purpose,
+                    description: description,
+                    urgency: urgency,
+                    lastVisit: lastVisit
+                }
 
-                newVisite = new VisitDentist(mainDataVisite, lastVisit);
+                (async () => {
+                    let info = await request('https://ajax.test-danit.com/api/v2/cards', 'POST', data);
+                    infoAfterRequest = new VisitDentist(info);
+                  })();
+
+                // const info = request('https://ajax.test-danit.com/api/v2/cards', 'POST', data);
+
+                // let infoAfterRequest = Promise.race(info, new VisitDentist(info));
+                // request ('https://ajax.test-danit.com/api/v2/cards', 'POST', data)
+                // .then(data => data.json()).then(info => new Visite(info))
+                console.log(infoAfterRequest);
+
             }
             if(doctor === 'Cardiologist'){
-                const age = document.querySelector('.modal-form__input-age').value;
-                const mass = document.querySelector('.modal-form__input-mass').value;
-                const pressure = document.querySelector('.modal-form__input-pressure').value;
-                const diseases = document.querySelector('.modal-form__input-diseases').value;
-                newVisite = new VisitDentist(mainDataVisite, mass, pressure, diseases, age);
+                const age = document.querySelector('.age__input').value;
+                const mass = document.querySelector('.mass__input').value;
+                const pressure = document.querySelector('.pressure__input').value;
+                const diseases = document.querySelector('.diseases__input').value;
+                const data = {
+                    title: 'Візит до кардіолога',
+                    doctor:doctor,
+                    name: name,
+                    purpose: purpose,
+                    description: description,
+                    urgency: urgency,
+                    age:age,
+                    mass:mass,
+                    pressure:pressure,
+                    diseases:diseases
+                }
+                let infoAfterRequest = request('https://ajax.test-danit.com/api/v2/cards', 'POST', data)
+                newVisite = new VisitDentist(infoAfterRequest);
             }
             if(doctor=== 'Therapist'){
                 const age = document.querySelector('.modal-form__input-age').value;
+                const data = {
+                    title: 'Візит до терапевта',
+                    doctor:doctor,
+                    name: name,
+                    purpose: purpose,
+                    description: description,
+                    urgency: urgency,
+                    age:age
+                }
+                let infoAfterRequest = request('https://ajax.test-danit.com/api/v2/cards', 'POST', data)
                 newVisite = new VisitDentist(mainDataVisite, age);
             }
             console.log(newVisite);
+            // newVisite.createCard();
         })
 
     }
@@ -215,14 +252,27 @@ class Modal{
 
 
 class Visit {
-    constructor(clientMainData){
-        this.doctor = clientMainData.doctor;
-        this.name = clientMainData.name;
+    constructor({doctor, name, ...clientMainData}){
+        this.doctor = doctor;
+        this.name = name;
         this.purposeVisite = clientMainData.purposeVisite;
         this.urgency = clientMainData.urgency;
         this.discriprionVisite = clientMainData.discriprionVisite;
     }
+    createCard(){
+        const cardField = document.querySelector('.field-card__list');
+        cardField.insertAdjacentHTML('afterbegin', `
+        <div class="card">
+        <p class="card__name">${this.name}</p>
+        <p class="card__doctor">${this.doctor}</p>
+        <button class="card__more">Open more</button>
+        </div>`);
+        document.querySelector('.card')
+    }
 
+    moreInformation(){
+
+    }
 }
 
 class VisitDentist extends Visit{
@@ -233,9 +283,12 @@ class VisitDentist extends Visit{
 }
 
 class VisitCardiologist extends Visit{
-    constructor(clientMainData){
+    constructor(clientMainData, mass, pressure, diseases, age){
         super(clientMainData);
-
+        this.mass = mass;
+        this.pressure = pressure;
+        this.diseases = diseases;
+        this.age = age;
     }
 }
 
@@ -246,3 +299,10 @@ class VisitTherapist extends Visit{
     }
 }
 
+
+
+class CreateForm {
+
+}
+
+// export {newVisite};

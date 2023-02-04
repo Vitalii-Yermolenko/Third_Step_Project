@@ -56,6 +56,7 @@ async function init() {
     if (localStorage.getItem('token')) {
         console.log('logined');
         removeLoginModal()
+        getCards()
     } else {
         await login()
         console.log('Need cards')
@@ -74,6 +75,21 @@ function login(email, password) {
 }
 
 buttonLogin.addEventListener('click', renderLoginModal)
+token = localStorage.getItem('token')
+
+ function getCards () {
+    let token = localStorage.getItem('token')
+    fetch('https://ajax.test-danit.com/api/v2/cards', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        }
+
+    }).then(response => response.json())
+        .then(response => console.log(response))
+}
+
 
 
 

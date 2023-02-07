@@ -264,6 +264,10 @@ class Visit {
         this.doctor = clientMainData.doctor;
         this.name = clientMainData.name;
         this.id = clientMainData.id;
+        this.purpose = clientMainData.purpose;
+        this.description = clientMainData.description;
+        this.urgency = clientMainData.urgency;
+
     }
     createCardMain(){
         const cardField = document.querySelector('.field-card__list');
@@ -277,14 +281,31 @@ class Visit {
         </div>`);
         const buttonMore = createElementForm('button','card__button-more',card);
         buttonMore.innerText = 'Більше інформації';
+        console.log(this.name);
         buttonMore.addEventListener('click', () => {
-            this.moreInformation(card,clientMainData);
+            this.moreInformation(card,buttonMore);
+            buttonMore.style.display ='none';
         })
 
     }
-
-    moreInformation(card, data){
-        console.log('more information');
+    moreInformation(card,button){
+        const cardMore = createElementForm('div','card__more',card);
+        cardMore.dataset.id = this.id;
+        cardMore.insertAdjacentHTML('afterbegin', `
+        <p class="card__purpose">Ціль візиту: ${this.purpose}</p>
+        <p class="card__description">Короткий опис: ${this.description}</p>
+        <p class="card__urgency">Терміновість: ${this.urgency}</p>`);
+        this.specificInformation(cardMore);
+        const buttonHide = createElementForm('button', 'card__button-hide',card);
+        buttonHide.innerText ='Сховати';
+        buttonHide.addEventListener('click', () => {
+            cardMore.remove();
+            button.style.display = 'block';
+            buttonHide.style.display = 'none';
+        })
+    }
+    specificInformation(card){
+        console.log('main');
     }
 }
 
@@ -293,31 +314,35 @@ class VisitDentist extends Visit{
         super(clientMainData);
         this.lastVisit = clientMainData.lastVisit;
     }
-    moreInformation(card, data){
-        console.log('more information dentist', this.name, data.name);
+    specificInformation(card){
+        console.log(this.lastVisit);
+        card.insertAdjacentHTML('beforeend', `<p class="card__last-visite">Дата останнього візиту: ${this.lastVisit}</p>`);
     }
 }
 
 class VisitCardiologist extends Visit{
-    constructor(clientMainData, mass, pressure, diseases, age){
+    constructor(clientMainData){
         super(clientMainData);
-        this.mass = mass;
-        this.pressure = pressure;
-        this.diseases = diseases;
-        this.age = age;
+        this.mass = clientMainData.mass;
+        this.pressure = clientMainData.pressure;
+        this.diseases = clientMainData.diseases;
+        this.age = clientMainData.age;
     }
-    moreInformation(card,data){
-        console.log('more information cardio');
+    specificInformation(card){
+        card.insertAdjacentHTML('beforeend', `<p class="card__mass">Індекс ваги: ${this.mass}</p>
+        <p class="card__pressure">Звичний артеріальний тиск: ${this.pressure}</p>
+        <p class="card__diseases">перенесені захворювання серцево-судинної системи: ${this.diseases}</p>
+        <p class="card__age">Вік: ${this.age}</p>`);
     }
 }
 
 class VisitTherapist extends Visit{
-    constructor(clientMainData,age){
+    constructor(clientMainData){
         super(clientMainData);
-        this.age = age;
+        this.age = clientMainData.age;
     }
-    moreInformation(card){
-        console.log('more information therapist');
+    specificInformation(card){
+        card.insertAdjacentHTML('beforeend', `<p class="card__last-visite">Вік: ${this.age}</p>`);
     }
 }
 

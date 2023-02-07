@@ -19,8 +19,8 @@ function createElementForm( node, classNode, parent){
     return element;
 }
 
-async function request (url , method, data) {
-    return await fetch(url, {
+function request (url , method, data) {
+    return fetch(url, {
         method: method,
         headers: {
           'Content-Type': 'application/json',
@@ -29,8 +29,70 @@ async function request (url , method, data) {
         body: JSON.stringify(data)
       })
         .then(response => response.json())
-        // .then(data => new VisitDentist(data))
         // .then(response => console.log(response))
+}
+
+function gatheringInfo(doctor) {
+    let data;
+    const mainDataVisite = {};
+    const name = document.querySelector('.name__input').value;
+    const purpose = document.querySelector('.purpose__input').value;
+    const urgency = document.querySelector('.urgency__select').value;
+    const description = document.querySelector('.description__textarea').value;
+    if(urgency === ' '){
+        alert('Change urgency')
+        return;
+    }
+    if(urgency){
+        mainDataVisite.urgency = urgency;
+    }
+
+    mainDataVisite.name = name;
+    mainDataVisite.purpose = purpose;
+    mainDataVisite.description = description;
+    if(doctor === 'Dentist'){
+        const lastVisit = document.querySelector('.last-visite__input').value;
+         data = {
+            title: 'Візит до стоматолога',
+            doctor:doctor,
+            name: name,
+            purpose: purpose,
+            description: description,
+            urgency: urgency,
+            lastVisit: lastVisit
+        }
+        }
+        if(doctor === 'Cardiologist'){
+            const age = document.querySelector('.age__input').value;
+            const mass = document.querySelector('.mass__input').value;
+            const pressure = document.querySelector('.pressure__input').value;
+            const diseases = document.querySelector('.diseases__input').value;
+            data = {
+                title: 'Візит до кардіолога',
+                doctor:doctor,
+                name: name,
+                purpose: purpose,
+                description: description,
+                urgency: urgency,
+                age:age,
+                mass:mass,
+                pressure:pressure,
+                diseases:diseases
+            }
+        }
+        if(doctor=== 'Therapist'){
+            const age = document.querySelector('.modal-form__input-age').value;
+            data = {
+                title: 'Візит до терапевта',
+                doctor:doctor,
+                name: name,
+                purpose: purpose,
+                description: description,
+                urgency: urgency,
+                age:age
+            }
+            }
+        return data; 
 }
 
 class Modal{
@@ -147,98 +209,43 @@ class Modal{
 
     async submitBlock(parent){ 
         let newVisite;
-        let infoAfterRequest;
-        const mainDataVisite = {};
         const submitButton = createElementForm('button', 'modal-form__button-submit', parent);
         submitButton.innerText = "Submit data";
         submitButton.addEventListener('click', (event) => {
             event.preventDefault();
+            
             const doctor = document.querySelector('.list-doctor__select').value;
             if(doctor === ' '){
                 alert('Change doctor')
                 return;
             }
-            if(doctor){
-                mainDataVisite.doctor = doctor;
+
+        const data = gatheringInfo(doctor);
+        const dataRequest = request('https://ajax.test-danit.com/api/v2/cards', 'POST', data)
+        .catch(e => console.log("Помилка: " + e.message));
+        const getInfo = async () => {
+            const data = await dataRequest;
+            console.log(data.doctor);
+            if(data.doctor === 'Dentist'){
+                newVisite = new VisitDentist(data);
             }
-            const name = document.querySelector('.name__input').value;
-            const purpose = document.querySelector('.purpose__input').value;
-            const urgency = document.querySelector('.urgency__select').value;
-            const description = document.querySelector('.description__textarea').value;
-            if(urgency === ' '){
-                alert('Change urgency')
-                return;
+            if(data.doctor === 'Cardiologist'){
+                newVisite = new VisitCardiologist(data);
             }
-            if(urgency){
-                mainDataVisite.urgency = urgency;
+            if(data.doctor === 'Therapist'){
+                newVisite = new VisitTherapist(data);
             }
+            newVisite.createCardMain();
 
-            mainDataVisite.name = name;
-            mainDataVisite.purpose = purpose;
-            mainDataVisite.description = description;
+          };
+          
+          getInfo();
+        if (event) {
+            const form = document.querySelector('.modal-form');
+            form.remove();
+            buttonForm.disabled = false;
+        }
 
-
-            if(doctor === 'Dentist'){
-                const lastVisit = document.querySelector('.last-visite__input').value;
-                const data = {
-                    title: 'Візит до стоматолога',
-                    doctor:doctor,
-                    name: name,
-                    purpose: purpose,
-                    description: description,
-                    urgency: urgency,
-                    lastVisit: lastVisit
-                }
-
-                (async () => {
-                    let info = await request('https://ajax.test-danit.com/api/v2/cards', 'POST', data);
-                    infoAfterRequest = new VisitDentist(info);
-                  })();
-
-                // const info = request('https://ajax.test-danit.com/api/v2/cards', 'POST', data);
-
-                // let infoAfterRequest = Promise.race(info, new VisitDentist(info));
-                // request ('https://ajax.test-danit.com/api/v2/cards', 'POST', data)
-                // .then(data => data.json()).then(info => new Visite(info))
-                console.log(infoAfterRequest);
-
-            }
-            if(doctor === 'Cardiologist'){
-                const age = document.querySelector('.age__input').value;
-                const mass = document.querySelector('.mass__input').value;
-                const pressure = document.querySelector('.pressure__input').value;
-                const diseases = document.querySelector('.diseases__input').value;
-                const data = {
-                    title: 'Візит до кардіолога',
-                    doctor:doctor,
-                    name: name,
-                    purpose: purpose,
-                    description: description,
-                    urgency: urgency,
-                    age:age,
-                    mass:mass,
-                    pressure:pressure,
-                    diseases:diseases
-                }
-                let infoAfterRequest = request('https://ajax.test-danit.com/api/v2/cards', 'POST', data)
-                newVisite = new VisitDentist(infoAfterRequest);
-            }
-            if(doctor=== 'Therapist'){
-                const age = document.querySelector('.modal-form__input-age').value;
-                const data = {
-                    title: 'Візит до терапевта',
-                    doctor:doctor,
-                    name: name,
-                    purpose: purpose,
-                    description: description,
-                    urgency: urgency,
-                    age:age
-                }
-                let infoAfterRequest = request('https://ajax.test-danit.com/api/v2/cards', 'POST', data)
-                newVisite = new VisitDentist(mainDataVisite, age);
-            }
-            console.log(newVisite);
-            // newVisite.createCard();
         })
 
     }
@@ -252,33 +259,42 @@ class Modal{
 
 
 class Visit {
-    constructor({doctor, name, ...clientMainData}){
-        this.doctor = doctor;
-        this.name = name;
-        this.purposeVisite = clientMainData.purposeVisite;
-        this.urgency = clientMainData.urgency;
-        this.discriprionVisite = clientMainData.discriprionVisite;
+    constructor(clientMainData){
+        this.title = clientMainData.title;
+        this.doctor = clientMainData.doctor;
+        this.name = clientMainData.name;
+        this.id = clientMainData.id;
     }
-    createCard(){
+    createCardMain(){
         const cardField = document.querySelector('.field-card__list');
-        cardField.insertAdjacentHTML('afterbegin', `
-        <div class="card">
-        <p class="card__name">${this.name}</p>
-        <p class="card__doctor">${this.doctor}</p>
-        <button class="card__more">Open more</button>
+        const card = createElementForm('div','card',cardField);
+        card.dataset.id = this.id;
+        card.insertAdjacentHTML('afterbegin', `
+        <div class="card" data-id='${this.id}'>
+        <h2 class="card__title">${this.title}</h2>
+        <p class="card__name">Ім'я:${this.name}</p>
+        <p class="card__doctor">До якого лікаря:${this.doctor}</p>
         </div>`);
-        document.querySelector('.card')
+        const buttonMore = createElementForm('button','card__button-more',card);
+        buttonMore.innerText = 'Більше інформації';
+        buttonMore.addEventListener('click', () => {
+            this.moreInformation(card,clientMainData);
+        })
+
     }
 
-    moreInformation(){
-
+    moreInformation(card, data){
+        console.log('more information');
     }
 }
 
 class VisitDentist extends Visit{
-    constructor(clientMainData,lastVisit){
+    constructor(clientMainData){
         super(clientMainData);
-        this.lastVisit = lastVisit;
+        this.lastVisit = clientMainData.lastVisit;
+    }
+    moreInformation(card, data){
+        console.log('more information dentist', this.name, data.name);
     }
 }
 
@@ -290,6 +306,9 @@ class VisitCardiologist extends Visit{
         this.diseases = diseases;
         this.age = age;
     }
+    moreInformation(card,data){
+        console.log('more information cardio');
+    }
 }
 
 class VisitTherapist extends Visit{
@@ -297,12 +316,11 @@ class VisitTherapist extends Visit{
         super(clientMainData);
         this.age = age;
     }
+    moreInformation(card){
+        console.log('more information therapist');
+    }
 }
 
 
-
-class CreateForm {
-
-}
 
 // export {newVisite};

@@ -2,6 +2,7 @@
 // pass: danit2023
 // token: 9baa5726-5329-404b-a22d-44c224eaa2d2
 
+
 const buttonLogin = document.querySelector('.header__button')
 const changeButtonLogin = document.querySelector('.header__button--visit')
 const containerMain = document.querySelector('.main')
@@ -77,7 +78,8 @@ function login(email, password) {
 buttonLogin.addEventListener('click', renderLoginModal)
 token = localStorage.getItem('token')
 
- function getCards () {
+
+function getCards () {
     let token = localStorage.getItem('token')
     fetch('https://ajax.test-danit.com/api/v2/cards', {
         method: 'GET',
@@ -87,8 +89,13 @@ token = localStorage.getItem('token')
         }
 
     }).then(response => response.json())
-        .then(response => console.log(response))
+        .then(response => console.log(response.forEach( e => {
+            console.log(e)
+
+        })))
+
 }
+
 
 
 

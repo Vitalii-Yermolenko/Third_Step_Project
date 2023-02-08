@@ -283,13 +283,28 @@ class Visit {
         const buttonDel = createElementForm('button', 'card__button-del',card);
         buttonDel.innerText = 'X';
         buttonMore.innerText = 'Більше інформації';
+
+        const buttonHide = createElementForm('button', 'card__button-hide',card);
+        buttonHide.innerText ='Сховати';
+        buttonHide.style.display = 'none';
         card.addEventListener('click', (e) => {
             const idCard = e.currentTarget.dataset.id;
             
             if(e.target.classList.contains('card__button-update')){
+                const cardMoreInfo = document.querySelector('.card__more');
+                if(!cardMoreInfo){
+                    this.moreInformation(card,buttonMore);
+                }
+                buttonMore.style.display ='none';
+                buttonHide.style.display = 'none';
+                buttonUpdate.style.display = 'none';
 
-
+                const buttonSubmitUp = createElementForm('button', 'card__button-submit-up');
+                buttonSubmitUp.addEventListener('click', () => {
                 // request(`https://ajax.test-danit.com/api/v2/cards/${idCard}`, 'PUT', data);
+                buttonSubmitUp.remove();
+                })
+
             }
             if(e.target.classList.contains('card__button-del')){
                 fetch(`https://ajax.test-danit.com/api/v2/cards/${idCard}`, {
@@ -302,12 +317,20 @@ class Visit {
             }
 
             if(e.target.classList.contains('card__button-more')){
-                this.moreInformation(card,buttonMore);
+                this.moreInformation(card);
                 buttonMore.style.display ='none';
+                buttonHide.style.display = 'block';
+            }
+
+            if(e.target.classList.contains('card__button-hide')){
+                const cardMoreInfo = document.querySelector('.card__more');
+                cardMoreInfo.remove();
+                buttonMore.style.display = 'block';
+                buttonHide.style.display = 'none';
             }
         })
     }
-    moreInformation(card,button){
+    moreInformation(card){
         const cardMore = createElementForm('div','card__more',card);
         cardMore.dataset.id = this.id;
         cardMore.insertAdjacentHTML('afterbegin', `
@@ -315,14 +338,6 @@ class Visit {
         <p class="card__description">Короткий опис: ${this.description}</p>
         <p class="card__urgency">Терміновість: ${this.urgency}</p>`);
         this.specificInformation(cardMore);
-
-        const buttonHide = createElementForm('button', 'card__button-hide',card);
-        buttonHide.innerText ='Сховати';
-        buttonHide.addEventListener('click', () => {
-            cardMore.remove();
-            button.style.display = 'block';
-            buttonHide.style.display = 'none';
-        })
     }
     specificInformation(card){
     }

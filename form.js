@@ -273,25 +273,39 @@ class Visit {
         const cardField = document.querySelector('.field-card__list');
         const card = createElementForm('div','card',cardField);
         card.dataset.id = this.id;
-        const buttonUpdate = createElementForm('button','card__button-more',card);
+        const buttonUpdate = createElementForm('button','card__button-update',card);
         buttonUpdate.innerText = 'Редагувати';
         card.insertAdjacentHTML('afterbegin', `
         <h2 class="card__title">${this.title}</h2>
-        <p class="card__name">Ім'я:${this.name}</p>
-        <p class="card__doctor">До якого лікаря:${this.doctor}</p>`);
+        <p class="card__name">Ім'я:<span class='card__name-value'>${this.name}</span></p>
+        <p class="card__doctor">До якого лікаря:<span class='card__doctor-value'>${this.doctor}</span></p>`);
         const buttonMore = createElementForm('button','card__button-more',card);
+        const buttonDel = createElementForm('button', 'card__button-del',card);
+        buttonDel.innerText = 'X';
         buttonMore.innerText = 'Більше інформації';
-        console.log(this.name);
-        buttonUpdate.addEventListener('click', (event) => {
-            console.log(event.currentTarget);
-            console.log(event.target);
-        })
-        buttonMore.addEventListener('click', () => {
-            this.moreInformation(card,buttonMore);
-            buttonMore.style.display ='none';
-        })
+        card.addEventListener('click', (e) => {
+            const idCard = e.currentTarget.dataset.id;
+            
+            if(e.target.classList.contains('card__button-update')){
 
 
+                // request(`https://ajax.test-danit.com/api/v2/cards/${idCard}`, 'PUT', data);
+            }
+            if(e.target.classList.contains('card__button-del')){
+                fetch(`https://ajax.test-danit.com/api/v2/cards/${idCard}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            })
+            card.remove();
+            }
+
+            if(e.target.classList.contains('card__button-more')){
+                this.moreInformation(card,buttonMore);
+                buttonMore.style.display ='none';
+            }
+        })
     }
     moreInformation(card,button){
         const cardMore = createElementForm('div','card__more',card);
@@ -301,6 +315,7 @@ class Visit {
         <p class="card__description">Короткий опис: ${this.description}</p>
         <p class="card__urgency">Терміновість: ${this.urgency}</p>`);
         this.specificInformation(cardMore);
+
         const buttonHide = createElementForm('button', 'card__button-hide',card);
         buttonHide.innerText ='Сховати';
         buttonHide.addEventListener('click', () => {
@@ -319,7 +334,6 @@ class VisitDentist extends Visit{
         this.lastVisit = clientMainData.lastVisit;
     }
     specificInformation(card){
-        console.log(this.lastVisit);
         card.insertAdjacentHTML('beforeend', `<p class="card__last-visite">Дата останнього візиту: ${this.lastVisit}</p>`);
     }
 }

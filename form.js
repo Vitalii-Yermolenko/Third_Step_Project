@@ -40,7 +40,7 @@ function gatheringInfo(doctor) {
     const urgency = document.querySelector('.urgency__select').value;
     const description = document.querySelector('.description__textarea').value;
     if(urgency === ' '){
-        alert('Change urgency')
+        alert('Change urgency');
         return;
     }
     if(urgency){
@@ -81,7 +81,7 @@ function gatheringInfo(doctor) {
             }
         }
         if(doctor=== 'Therapist'){
-            const age = document.querySelector('.modal-form__input-age').value;
+            const age = document.querySelector('.age__input').value;
             data = {
                 title: 'Візит до терапевта',
                 doctor:doctor,
@@ -273,19 +273,24 @@ class Visit {
         const cardField = document.querySelector('.field-card__list');
         const card = createElementForm('div','card',cardField);
         card.dataset.id = this.id;
+        const buttonUpdate = createElementForm('button','card__button-more',card);
+        buttonUpdate.innerText = 'Редагувати';
         card.insertAdjacentHTML('afterbegin', `
-        <div class="card" data-id='${this.id}'>
         <h2 class="card__title">${this.title}</h2>
         <p class="card__name">Ім'я:${this.name}</p>
-        <p class="card__doctor">До якого лікаря:${this.doctor}</p>
-        </div>`);
+        <p class="card__doctor">До якого лікаря:${this.doctor}</p>`);
         const buttonMore = createElementForm('button','card__button-more',card);
         buttonMore.innerText = 'Більше інформації';
         console.log(this.name);
+        buttonUpdate.addEventListener('click', (event) => {
+            console.log(event.currentTarget);
+            console.log(event.target);
+        })
         buttonMore.addEventListener('click', () => {
             this.moreInformation(card,buttonMore);
             buttonMore.style.display ='none';
         })
+
 
     }
     moreInformation(card,button){
@@ -305,7 +310,6 @@ class Visit {
         })
     }
     specificInformation(card){
-        console.log('main');
     }
 }
 
@@ -346,6 +350,3 @@ class VisitTherapist extends Visit{
     }
 }
 
-
-
-// export {newVisite};

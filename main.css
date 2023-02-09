@@ -100,8 +100,41 @@ textarea{
 }
 
 
-.no--items {
+.start-page {
     display: flex;
     justify-content: center;
-    opacity: 0;
+    font-size: 26px;
+}
+
+.filterForm {
+    display: flex;
+    justify-content: center;
+}
+
+.filterForm__input {
+    width: 500px;
+    height: 20px;
+}
+
+.hidden{
+    display: none !important;
+}
+
+
+.field-card__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-top: 20px;
+    justify-content: center;
+}
+
+.card {
+    border: 1px solid black;
+    padding: 20px;
+    /*margin: 0 auto;*/
+}
+
+.filterForm {
+    margin-bottom: 10px;
 }

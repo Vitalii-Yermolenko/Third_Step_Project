@@ -1,4 +1,7 @@
-const buttonForm =document.querySelector('.header__button--visit');
+
+
+const buttonForm = document.querySelector('.header__button--visit');
+const cardField = document.querySelector('.field-card__list');
 
 let token = '9baa5726-5329-404b-a22d-44c224eaa2d2';
 
@@ -95,33 +98,33 @@ function gatheringInfo(doctor) {
     return data;
 }
 
-export class Modal {
-    constructor() {
+class Modal{
+    constructor(){
     }
 
-    createModal() {
+    createModal () {
         const form = document.querySelector('.modal-form');
-        if (form) {
+        if(form){
             form.remove();
         }
 
         const modalForm = createElementForm('form', 'modal-form', document.body);
 
-        const labelListDoctor = createElementForm('label', 'list-doctor__label', modalForm);
-        const selectDoctor = createElementForm('select', 'list-doctor__select', labelListDoctor);
+        const labelListDoctor = createElementForm('label','list-doctor__label', modalForm);
+        const selectDoctor = createElementForm('select','list-doctor__select', labelListDoctor);
         doctors.forEach(doctor => {
-            const optionDoctor = createElementForm('option', 'list-doctor__option', selectDoctor);
+            const optionDoctor = createElementForm('option','list-doctor__option',selectDoctor);
             optionDoctor.innerText = doctor;
             optionDoctor.value = doctor;
         });
-        const buttonClose = createElementForm('button', 'modal-form__btnClose', modalForm);
+        const buttonClose = createElementForm('button','modal-form__btnClose',modalForm );
         buttonClose.innerText = 'Close form';
-        buttonClose.addEventListener('click', () => {
+        buttonClose.addEventListener('click', () =>{
             buttonForm.disabled = false;
             modalForm.remove();
         })
         this.submitBlock(modalForm);
-        selectDoctor.addEventListener('change', (event) => {
+        selectDoctor.addEventListener('change', (event) =>{
             const formDoctor = document.querySelector('.modal-form__doctor');
             const formMainData = document.querySelector('.modal-form__main-data');
             if (event.target.value === " ") {
@@ -130,60 +133,60 @@ export class Modal {
             if (!formMainData) {
                 this.createMainData(modalForm);
             }
-            if (formDoctor) {
+            if(formDoctor){
                 formDoctor.remove();
             }
-            if (event.target.value === 'Dentist') {
+            if(event.target.value === 'Dentist'){
                 this.createDentistBlock(modalForm);
             }
-            if (event.target.value === 'Cardiologist') {
+            if(event.target.value === 'Cardiologist'){
                 this.createCardiologistBlock(modalForm);
             }
-            if (event.target.value === 'Therapist') {
+            if(event.target.value === 'Therapist'){
                 this.createTherapistBlock(modalForm);
             }
 
         })
 
 
+
     }
 
-    createMainData(parent) {
-        const mainDataForm = createElementForm('div', 'modal-form__main-data', parent)
+    createMainData(parent){
+        const mainDataForm = createElementForm('div', 'modal-form__main-data',parent )
 
-        const labelName = createElementForm('label', 'name__label', mainDataForm);
+        const labelName= createElementForm('label','name__label', mainDataForm);
         labelName.innerText = `visiter's name`;
-        const inputName = createElementForm('input', 'name__input', labelName);
-        inputName.type = 'text';
+        const inputName = createElementForm('input','name__input', labelName);
+        inputName.type ='text';
 
-        const labelPurpose = createElementForm('label', 'purpose__label', mainDataForm);
+        const labelPurpose = createElementForm('label','purpose__label', mainDataForm);
         labelPurpose.innerText = `Purpose of the visit`;
-        const inputPurpose = createElementForm('input', 'purpose__input', labelPurpose);
-        inputPurpose.type = 'text';
+        const inputPurpose = createElementForm('input','purpose__input', labelPurpose);
+        inputPurpose.type ='text';
 
-        const labelDescription = createElementForm('label', 'description__label', mainDataForm);
+        const labelDescription = createElementForm('label','description__label', mainDataForm);
         labelDescription.innerText = `Short description of the visit`;
-        const inputDescription = createElementForm('textarea', 'description__textarea', labelDescription);
+        const inputDescription = createElementForm('textarea','description__textarea', labelDescription);
 
-        const labelUrgency = createElementForm('label', 'urgency__label', mainDataForm);
+        const labelUrgency = createElementForm('label','urgency__label', mainDataForm);
         labelUrgency.innerText = 'The urgency of the visit:';
-        const selectUrgencies = createElementForm('select', 'urgency__select', labelUrgency);
+        const selectUrgencies= createElementForm('select','urgency__select', labelUrgency);
         urgency.forEach(urgency => {
-            const optionUrgency = createElementForm('option', 'urgency__option', selectUrgencies);
+            const optionUrgency = createElementForm('option','urgency__option',selectUrgencies);
             optionUrgency.innerText = urgency;
             optionUrgency.value = urgency;
         });
     }
 
-    createDentistBlock(parent) {
+    createDentistBlock(parent){
         parent.insertAdjacentHTML('beforeend', `  <div class="modal-form__doctor dantist">
         <label class="doctor__labe">Останній візит до стоматолога
             <input class="last-visite__input" type="date">
         </label>
     </div>`)
     }
-
-    createCardiologistBlock(parent) {
+    createCardiologistBlock(parent){
         parent.insertAdjacentHTML('beforeend', `  <div class="modal-form__doctor dantist">
         <label class="doctor__label">Звичний артеріальний тиск пацієнта
             <input class="pressure__input" type="text">
@@ -199,8 +202,7 @@ export class Modal {
         </label>
         </div>`)
     }
-
-    createTherapistBlock(parent) {
+    createTherapistBlock(parent){
         parent.insertAdjacentHTML('beforeend', `  <div class="modal-form__doctor">
         <label class="doctor__label">Вік пацієнта
             <input class="age__input" type="text">
@@ -208,7 +210,7 @@ export class Modal {
     </div>`)
     }
 
-    async submitBlock(parent) {
+    async submitBlock(parent){
         let newVisite;
         const submitButton = createElementForm('button', 'modal-form__button-submit', parent);
         submitButton.innerText = "Submit data";
@@ -216,7 +218,7 @@ export class Modal {
             event.preventDefault();
 
             const doctor = document.querySelector('.list-doctor__select').value;
-            if (doctor === ' ') {
+            if(doctor === ' '){
                 alert('Change doctor')
                 return;
             }
@@ -227,13 +229,13 @@ export class Modal {
             const getInfo = async () => {
                 const data = await dataRequest;
                 console.log(data.doctor);
-                if (data.doctor === 'Dentist') {
+                if(data.doctor === 'Dentist'){
                     newVisite = new VisitDentist(data);
                 }
-                if (data.doctor === 'Cardiologist') {
+                if(data.doctor === 'Cardiologist'){
                     newVisite = new VisitCardiologist(data);
                 }
-                if (data.doctor === 'Therapist') {
+                if(data.doctor === 'Therapist'){
                     newVisite = new VisitTherapist(data);
                 }
                 newVisite.createCardMain();
@@ -251,18 +253,16 @@ export class Modal {
 
     }
 
-    updateData() {
+    updateData (){
         this.createModal();
 
     }
-
 }
 
 
 
 class Visit {
     constructor(clientMainData){
-        this.name = name;
         this.title = clientMainData.title;
         this.doctor = clientMainData.doctor;
         this.name = clientMainData.name;
@@ -273,31 +273,71 @@ class Visit {
 
     }
     createCardMain(){
-        const cardField = document.querySelector('.field-card__list');
         const card = createElementForm('div','card',cardField);
         card.dataset.id = this.id;
-        const buttonUpdate = createElementForm('button','card__button-more',card);
+        const buttonUpdate = createElementForm('button','card__button-update',card);
         buttonUpdate.innerText = 'Редагувати';
         card.insertAdjacentHTML('afterbegin', `
         <h2 class="card__title">${this.title}</h2>
-        <p class="card__name">Ім'я:${this.name}</p>
-        <p class="card__doctor">До якого лікаря:${this.doctor}</p>`);
+        <p class="card__name">Ім'я:<span class='card__name-value'>${this.name}</span></p>
+        <p class="card__doctor">До якого лікаря:<span class='card__doctor-value'>${this.doctor}</span></p>`);
         const buttonMore = createElementForm('button','card__button-more',card);
+        const buttonDel = createElementForm('button', 'card__button-del',card);
+        buttonDel.innerText = 'X';
         buttonMore.innerText = 'Більше інформації';
-        console.log(this.name);
-        buttonUpdate.addEventListener('click', (event) => {
-            console.log(event.currentTarget);
-            console.log(event.target);
-        })
-        buttonMore.addEventListener('click', () => {
-            this.moreInformation(card,buttonMore);
-            buttonMore.style.display ='none';
-        })
 
+        const buttonHide = createElementForm('button', 'card__button-hide',card);
+        buttonHide.innerText ='Сховати';
+        buttonHide.style.display = 'none';
+        card.addEventListener('click', (e) => {
+            const idCard = e.currentTarget.dataset.id;
+
+            if(e.target.classList.contains('card__button-update')){
+                const cardMoreInfo = document.querySelector('.card__more');
+                if(!cardMoreInfo){
+                    this.moreInformation(card,buttonMore);
+                }
+                buttonMore.style.display ='none';
+                buttonHide.style.display = 'none';
+                buttonUpdate.style.display = 'none';
+
+                const buttonSubmitUp = createElementForm('button', 'card__button-submit-up');
+                buttonSubmitUp.addEventListener('click', () => {
+                    // request(`https://ajax.test-danit.com/api/v2/cards/${idCard}`, 'PUT', data);
+                    buttonSubmitUp.remove();
+                })
+
+            }
+            if(e.target.classList.contains('card__button-del')){
+                fetch(`https://ajax.test-danit.com/api/v2/cards/${idCard}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                })
+                card.remove();
+            }
+
+            if(e.target.classList.contains('card__button-more')){
+                this.moreInformation(card);
+                buttonMore.style.display ='none';
+                buttonHide.style.display = 'block';
+            }
+
+            if(e.target.classList.contains('card__button-hide')){
+                const cardMoreInfo = document.querySelector('.card__more');
+                cardMoreInfo.remove();
+                buttonMore.style.display = 'block';
+                buttonHide.style.display = 'none';
+            }
+        })
     }
 
+    static clearAllCards() {
+        cardField.innerHTML = '';
+    }
 
-    moreInformation(card,button){
+    moreInformation(card){
         const cardMore = createElementForm('div','card__more',card);
         cardMore.dataset.id = this.id;
         cardMore.insertAdjacentHTML('afterbegin', `
@@ -305,13 +345,6 @@ class Visit {
         <p class="card__description">Короткий опис: ${this.description}</p>
         <p class="card__urgency">Терміновість: ${this.urgency}</p>`);
         this.specificInformation(cardMore);
-        const buttonHide = createElementForm('button', 'card__button-hide',card);
-        buttonHide.innerText ='Сховати';
-        buttonHide.addEventListener('click', () => {
-            cardMore.remove();
-            button.style.display = 'block';
-            buttonHide.style.display = 'none';
-        })
     }
     specificInformation(card){
     }
@@ -323,7 +356,6 @@ class VisitDentist extends Visit{
         this.lastVisit = clientMainData.lastVisit;
     }
     specificInformation(card){
-        console.log(this.lastVisit);
         card.insertAdjacentHTML('beforeend', `<p class="card__last-visite">Дата останнього візиту: ${this.lastVisit}</p>`);
     }
 }
@@ -355,6 +387,11 @@ class VisitTherapist extends Visit{
 }
 
 
+
+
+
+
+//---------------------
 
 const buttonLogin = document.querySelector('.header__button')
 const changeButtonLogin = document.querySelector('.header__button--visit')
@@ -444,30 +481,77 @@ function getCards () {
     }).then(response => response.json())
         .then(response => {
             console.log(response)
-            if (response === [] || !response) {
-                const startPage = document.querySelector('.no--items')
-                startPage.style.opacity = '1'
+            cards = response
+            filteredCards = response
+            if (cards.length === 0) {
+                const startPage = document.createElement('div')
+               startPage.classList.add('start-page')
+                startPage.innerText = 'No items has been added'
+                containerMain.append(startPage)
+
             } else {
-            response.forEach( e => {
-            // console.log(e)
-            // console.log('---------------------------------------')
-            // console.log(e.doctor)
-            if (e.doctor.toLowerCase() === 'dentist') {
-                const cardsDentist = new VisitDentist(e)
-                cardsDentist.createCardMain()
-            }
-
-            if (e.doctor.toLowerCase() === 'cardiologist') {
-                const cardsCardiologist = new VisitCardiologist(e)
-                cardsCardiologist.createCardMain()
-            }
-
-            if (e.doctor.toLowerCase() === 'therapist') {
-                const cardsTherapist = new VisitTherapist(e)
-                cardsTherapist.createCardMain()
-            }
-        })}})
+           handleRenderCards(cards)
+            }})
 
 }
 
+function handleRenderCards (cards, filtering) {
 
+    if (filtering) {
+        Visit.clearAllCards();
+    }
+
+    cards.forEach( e => {
+
+        if (e.doctor.toLowerCase() === 'dentist') {
+            const cardsDentist = new VisitDentist(e)
+            cardsDentist.createCardMain()
+        }
+
+        if (e.doctor.toLowerCase() === 'cardiologist') {
+            const cardsCardiologist = new VisitCardiologist(e)
+            cardsCardiologist.createCardMain()
+        }
+
+        if (e.doctor.toLowerCase() === 'therapist') {
+            const cardsTherapist = new VisitTherapist(e)
+            cardsTherapist.createCardMain()
+        }
+    })
+}
+
+let cards
+const filterForm = document.querySelector('.filterForm__input')
+
+let filteredCards = cards;
+
+// console.log("INITIAL FILTERED CARDS", filteredCards)
+
+
+const filterUrgency = document.querySelector('.urgency')
+
+function filterCards() {
+    const urgencyValue = filterUrgency.value?.toLowerCase() || '';
+    const filterValue = filterForm.value?.toLowerCase() || '';
+
+    const filteredCards = cards.filter(card => {
+        if (card?.name?.toLowerCase().includes(filterValue) || card?.description?.toLowerCase().includes(filterValue)) {
+            return card;
+        }
+    }).filter(card => {
+
+        if (urgencyValue === 'all') {
+            return cards;
+        }
+
+        if (card?.urgency?.toLowerCase() === urgencyValue.toLowerCase()) {
+            return card;
+        }
+    })
+
+        handleRenderCards(filteredCards, true)
+}
+
+filterForm.addEventListener('input', filterCards)
+
+filterUrgency.addEventListener('input', filterCards)

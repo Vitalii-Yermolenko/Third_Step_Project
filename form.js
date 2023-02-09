@@ -32,13 +32,46 @@ function request (url , method, data) {
         // .then(response => console.log(response))
 }
 
+function replaceSpan(childrenCollection){
+    const [...childrens] = childrenCollection;
+    childrens.map(element => {
+        if(element.tagName.toLowerCase() === 'p'){
+            const spanOnCard = element.childNodes[1];
+            const spanData = spanOnCard.innerText;
+            const spanClass = spanOnCard.classList.value.slice(6,-6);
+            console.log(spanData, spanClass);
+            if( spanClass === 'urgency'){
+                const selectUrgencies = createElementForm('select','urgency__select', element);
+                urgency.forEach(urgency => {
+                    const optionUrgency = createElementForm('option','urgency__option',selectUrgencies);
+                    optionUrgency.innerText = urgency;
+                    optionUrgency.value = urgency;
+                });
+                selectUrgencies.value = spanData;
+            } else {
+                const inputCardUp = createElementForm('input',`${spanClass}__input`, element);
+                if( spanClass === 'last-visite'){
+                    inputCardUp.type="date";
+                }
+                inputCardUp.value = spanData;
+            }
+
+            spanOnCard.remove();
+        }
+        if(element.tagName.toLowerCase() === 'div'){
+            replaceSpan(element.children);
+        }
+    })
+}
+
+
 function gatheringInfo(doctor) {
     let data;
     const mainDataVisite = {};
     const name = document.querySelector('.name__input').value;
     const purpose = document.querySelector('.purpose__input').value;
     const urgency = document.querySelector('.urgency__select').value;
-    const description = document.querySelector('.description__textarea').value;
+    const description = document.querySelector('.description__input').value;
     if(urgency === ' '){
         alert('Change urgency');
         return;
@@ -164,7 +197,7 @@ class Modal{
 
         const labelDescription = createElementForm('label','description__label', mainDataForm);
         labelDescription.innerText = `Short description of the visit`;
-        const inputDescription = createElementForm('textarea','description__textarea', labelDescription);
+        const inputDescription = createElementForm('textarea','description__input', labelDescription);
 
         const labelUrgency = createElementForm('label','urgency__label', mainDataForm);
         labelUrgency.innerText = 'The urgency of the visit:';
@@ -225,7 +258,6 @@ class Modal{
         .catch(e => console.log("Помилка: " + e.message));
         const getInfo = async () => {
             const data = await dataRequest;
-            console.log(data.doctor);
             if(data.doctor === 'Dentist'){
                 newVisite = new VisitDentist(data);
             }
@@ -289,7 +321,6 @@ class Visit {
         buttonHide.style.display = 'none';
         card.addEventListener('click', (e) => {
             const idCard = e.currentTarget.dataset.id;
-            
             if(e.target.classList.contains('card__button-update')){
                 const cardMoreInfo = document.querySelector('.card__more');
                 if(!cardMoreInfo){
@@ -298,11 +329,18 @@ class Visit {
                 buttonMore.style.display ='none';
                 buttonHide.style.display = 'none';
                 buttonUpdate.style.display = 'none';
+                replaceSpan(card.children);
 
-                const buttonSubmitUp = createElementForm('button', 'card__button-submit-up');
+
+
+
+                const buttonSubmitUp = createElementForm('button', 'card__button-submit-up',card);
+                buttonSubmitUp.innerText = 'Зберегти';
                 buttonSubmitUp.addEventListener('click', () => {
-                // request(`https://ajax.test-danit.com/api/v2/cards/${idCard}`, 'PUT', data);
-                buttonSubmitUp.remove();
+                    const dataup = gatheringInfo(this.doctor);
+                    console.log(dataup);
+                request(`https://ajax.test-danit.com/api/v2/cards/${idCard}`, 'PUT', dataup);
+                // buttonSubmitUp.remove();
                 })
 
             }
@@ -334,9 +372,9 @@ class Visit {
         const cardMore = createElementForm('div','card__more',card);
         cardMore.dataset.id = this.id;
         cardMore.insertAdjacentHTML('afterbegin', `
-        <p class="card__purpose">Ціль візиту: ${this.purpose}</p>
-        <p class="card__description">Короткий опис: ${this.description}</p>
-        <p class="card__urgency">Терміновість: ${this.urgency}</p>`);
+        <p class="card__purpose">Ціль візиту:<span class='card__purpose-value'> ${this.purpose}</span></p>
+        <p class="card__description">Короткий опис:<span class='card__description-value'> ${this.description}</span></p>
+        <p class="card__urgency">Терміновість: <span class='card__urgency-value'>${this.urgency}</span></p>`);
         this.specificInformation(cardMore);
     }
     specificInformation(card){
@@ -349,7 +387,7 @@ class VisitDentist extends Visit{
         this.lastVisit = clientMainData.lastVisit;
     }
     specificInformation(card){
-        card.insertAdjacentHTML('beforeend', `<p class="card__last-visite">Дата останнього візиту: ${this.lastVisit}</p>`);
+        card.insertAdjacentHTML('beforeend', `<p class="card__last-visite">Дата останнього візиту: <span class='card__last-visite-value'>${this.lastVisit}</span></p>`);
     }
 }
 

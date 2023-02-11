@@ -23,6 +23,7 @@ function createElementForm( node, classNode, parent){
 }
 
 function request (url , method, data) {
+        let token = localStorage.getItem('token')
     return fetch(url, {
         method: method,
         headers: {
@@ -35,13 +36,70 @@ function request (url , method, data) {
     // .then(response => console.log(response))
 }
 
+
+function replaceSpan(childrenCollection){
+    const [...childrens] = childrenCollection;
+    childrens.map(element => {
+        if(element.tagName.toLowerCase() === 'p'){
+            const spanOnCard = element.childNodes[1];
+            const spanData = spanOnCard.innerText;
+            const spanClass = spanOnCard.classList.value.slice(6,-6);
+            if(spanClass === 'doctor'){
+                return;
+                }
+            if(spanClass === 'urgency'){
+                const selectUrgencies = createElementForm('select','urgency__select', element);
+                urgency.forEach(urgency => {
+                    const optionUrgency = createElementForm('option','urgency__option',selectUrgencies);
+                    optionUrgency.innerText = urgency;
+                    optionUrgency.value = urgency;
+                });
+                selectUrgencies.value = spanData;
+            } else {
+                const inputCardUp = createElementForm('input',`${spanClass}__input`, element);
+                if( spanClass === 'last-visite'){
+                    inputCardUp.type="date";
+                }
+                inputCardUp.value = spanData;
+            }
+
+            spanOnCard.remove();
+        }
+        if(element.tagName.toLowerCase() === 'div'){
+            replaceSpan(element.children);
+        }
+    })
+}
+
+function replaceInput(childrenCollection, data){
+    const [...childrens] = childrenCollection;
+    childrens.map(element => {
+        if(element.tagName.toLowerCase() === 'p'){
+            const inputOnCard = element.childNodes[1];
+            const inputClass = inputOnCard.classList.value.split('__')[0];
+            for (const key in data) {
+                console.log(key, inputClass);
+                if (key === inputClass) {
+                const spanCardUp = createElementForm('span',`card__${inputClass}-value`, element);
+                spanCardUp.innerText = data[key];
+                }
+            }
+            inputOnCard.remove();
+        }
+        if(element.tagName.toLowerCase() === 'div'){
+            replaceInput(element.children, data);
+        }
+    })
+}
+
+
 function gatheringInfo(doctor) {
     let data;
     const mainDataVisite = {};
     const name = document.querySelector('.name__input').value;
     const purpose = document.querySelector('.purpose__input').value;
     const urgency = document.querySelector('.urgency__select').value;
-    const description = document.querySelector('.description__textarea').value;
+    const description = document.querySelector('.description__input').value;
     if(urgency === ' '){
         alert('Change urgency');
         return;
@@ -167,7 +225,7 @@ class Modal{
 
         const labelDescription = createElementForm('label','description__label', mainDataForm);
         labelDescription.innerText = `Short description of the visit`;
-        const inputDescription = createElementForm('textarea','description__textarea', labelDescription);
+        const inputDescription = createElementForm('textarea','description__input', labelDescription);
 
         const labelUrgency = createElementForm('label','urgency__label', mainDataForm);
         labelUrgency.innerText = 'The urgency of the visit:';
@@ -290,8 +348,8 @@ class Visit {
         buttonHide.innerText ='Сховати';
         buttonHide.style.display = 'none';
         card.addEventListener('click', (e) => {
+            let saveCard = e.currentTarget;
             const idCard = e.currentTarget.dataset.id;
-
             if(e.target.classList.contains('card__button-update')){
                 const cardMoreInfo = document.querySelector('.card__more');
                 if(!cardMoreInfo){
@@ -300,22 +358,32 @@ class Visit {
                 buttonMore.style.display ='none';
                 buttonHide.style.display = 'none';
                 buttonUpdate.style.display = 'none';
+                replaceSpan(card.children);
 
-                const buttonSubmitUp = createElementForm('button', 'card__button-submit-up');
+
+                if(e.currentTarget !== card){
+                    buttonHide.style.display = 'block';
+                    buttonUpdate.style.display = 'block';
+                }
+
+                const buttonSubmitUp = createElementForm('button', 'card__button-submit-up',card);
+                buttonSubmitUp.innerText = 'Зберегти';
                 buttonSubmitUp.addEventListener('click', () => {
-                    // request(`https://ajax.test-danit.com/api/v2/cards/${idCard}`, 'PUT', data);
-                    buttonSubmitUp.remove();
+                    const dataup = gatheringInfo(this.doctor);
+                request(`https://ajax.test-danit.com/api/v2/cards/${idCard}`, 'PUT', dataup);
+                replaceInput(card.children, dataup);
+                // buttonSubmitUp.remove();
                 })
 
             }
             if(e.target.classList.contains('card__button-del')){
                 fetch(`https://ajax.test-danit.com/api/v2/cards/${idCard}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    },
-                })
-                card.remove();
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            })
+            card.remove();
             }
 
             if(e.target.classList.contains('card__button-more')){
@@ -337,13 +405,14 @@ class Visit {
         cardField.innerHTML = '';
     }
 
+
     moreInformation(card){
         const cardMore = createElementForm('div','card__more',card);
         cardMore.dataset.id = this.id;
         cardMore.insertAdjacentHTML('afterbegin', `
-        <p class="card__purpose">Ціль візиту: ${this.purpose}</p>
-        <p class="card__description">Короткий опис: ${this.description}</p>
-        <p class="card__urgency">Терміновість: ${this.urgency}</p>`);
+        <p class="card__purpose">Ціль візиту:<span class='card__purpose-value'> ${this.purpose}</span></p>
+        <p class="card__description">Короткий опис:<span class='card__description-value'> ${this.description}</span></p>
+        <p class="card__urgency">Терміновість: <span class='card__urgency-value'>${this.urgency}</span></p>`);
         this.specificInformation(cardMore);
     }
     specificInformation(card){
@@ -356,7 +425,7 @@ class VisitDentist extends Visit{
         this.lastVisit = clientMainData.lastVisit;
     }
     specificInformation(card){
-        card.insertAdjacentHTML('beforeend', `<p class="card__last-visite">Дата останнього візиту: ${this.lastVisit}</p>`);
+        card.insertAdjacentHTML('beforeend', `<p class="card__last-visite">Дата останнього візиту: <span class='card__last-visite-value'>${this.lastVisit}</span></p>`);
     }
 }
 
@@ -369,10 +438,10 @@ class VisitCardiologist extends Visit{
         this.age = clientMainData.age;
     }
     specificInformation(card){
-        card.insertAdjacentHTML('beforeend', `<p class="card__mass">Індекс ваги: ${this.mass}</p>
-        <p class="card__pressure">Звичний артеріальний тиск: ${this.pressure}</p>
-        <p class="card__diseases">перенесені захворювання серцево-судинної системи: ${this.diseases}</p>
-        <p class="card__age">Вік: ${this.age}</p>`);
+        card.insertAdjacentHTML('beforeend', `<p class="card__mass">Індекс ваги: <span class='card__mass-value'>${this.mass}</span></p>
+        <p class="card__pressure">Звичний артеріальний тиск: <span class='card__pressure-value'>${this.pressure}</span></p>
+        <p class="card__diseases">перенесені захворювання серцево-судинної системи:<span class='card__diseases-value'> ${this.diseases}</span></p>
+        <p class="card__age">Вік: <span class='card__age-value'>${this.age}</span></p>`);
     }
 }
 
@@ -382,7 +451,7 @@ class VisitTherapist extends Visit{
         this.age = clientMainData.age;
     }
     specificInformation(card){
-        card.insertAdjacentHTML('beforeend', `<p class="card__last-visite">Вік: ${this.age}</p>`);
+        card.insertAdjacentHTML('beforeend', `<p class="card__age">Вік: <span class='card__age-value'>${this.age}</span></p>`);
     }
 }
 

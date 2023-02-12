@@ -57,7 +57,7 @@ function replaceSpan(childrenCollection){
                 selectUrgencies.value = spanData;
             } else {
                 const inputCardUp = createElementForm('input',`${spanClass}__input`, element);
-                if( spanClass === 'last-visite'){
+                if( spanClass === 'last-visit'){
                     inputCardUp.type="date";
                 }
                 inputCardUp.value = spanData;
@@ -74,12 +74,22 @@ function replaceSpan(childrenCollection){
 function replaceInput(childrenCollection, data){
     const [...childrens] = childrenCollection;
     childrens.map(element => {
+        if(element.classList.value === 'card__doctor'){
+            console.log(element.classList);
+            return;
+        }
         if(element.tagName.toLowerCase() === 'p'){
+            console.log(element);
+
             const inputOnCard = element.childNodes[1];
-            const inputClass = inputOnCard.classList.value.split('__')[0];
+            let inputClass = inputOnCard.classList.value.split('__')[0];
+            if(inputClass === 'last-visit'){
+                const className = inputClass.split('-');
+                console.log(className[0]+className[1]);
+                inputClass = (className[0] + className[1]);
+            }
             for (const key in data) {
-                console.log(key, inputClass);
-                if (key === inputClass) {
+                if (key.toLowerCase() === inputClass) {
                 const spanCardUp = createElementForm('span',`card__${inputClass}-value`, element);
                 spanCardUp.innerText = data[key];
                 }
@@ -112,7 +122,7 @@ function gatheringInfo(doctor) {
     mainDataVisite.purpose = purpose;
     mainDataVisite.description = description;
     if(doctor === 'Dentist'){
-        const lastVisit = document.querySelector('.last-visite__input').value;
+        const lastVisit = document.querySelector('.last-visit__input').value;
         data = {
             title: 'Візит до стоматолога',
             doctor:doctor,
@@ -240,7 +250,7 @@ class Modal{
     createDentistBlock(parent){
         parent.insertAdjacentHTML('beforeend', `  <div class="modal-form__doctor dantist">
         <label class="doctor__labe">Останній візит до стоматолога
-            <input class="last-visite__input" type="date">
+            <input class="last-visit__input" type="date">
         </label>
     </div>`)
     }
@@ -372,7 +382,9 @@ class Visit {
                     const dataup = gatheringInfo(this.doctor);
                 request(`https://ajax.test-danit.com/api/v2/cards/${idCard}`, 'PUT', dataup);
                 replaceInput(card.children, dataup);
-                // buttonSubmitUp.remove();
+                buttonSubmitUp.remove();
+                buttonHide.style.display = 'block';
+                buttonUpdate.style.display = 'block';
                 })
 
             }
@@ -425,7 +437,7 @@ class VisitDentist extends Visit{
         this.lastVisit = clientMainData.lastVisit;
     }
     specificInformation(card){
-        card.insertAdjacentHTML('beforeend', `<p class="card__last-visite">Дата останнього візиту: <span class='card__last-visite-value'>${this.lastVisit}</span></p>`);
+        card.insertAdjacentHTML('beforeend', `<p class="card__last-visit">Дата останнього візиту: <span class='card__last-visit-value'>${this.lastVisit}</span></p>`);
     }
 }
 

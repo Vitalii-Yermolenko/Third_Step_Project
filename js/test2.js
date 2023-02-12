@@ -73,6 +73,7 @@ function replaceSpan(childrenCollection){
 
 function replaceInput(childrenCollection, data){
     const [...childrens] = childrenCollection;
+    let inputClassDate;
     childrens.map(element => {
         if(element.classList.value === 'card__doctor'){
             console.log(element.classList);
@@ -82,14 +83,14 @@ function replaceInput(childrenCollection, data){
             console.log(element);
 
             const inputOnCard = element.childNodes[1];
-            let inputClass = inputOnCard.classList.value.split('__')[0];
+            const inputClass = inputOnCard.classList.value.split('__')[0];
             if(inputClass === 'last-visit'){
                 const className = inputClass.split('-');
                 console.log(className[0]+className[1]);
-                inputClass = (className[0] + className[1]);
+                inputClassDate = (className[0] + className[1]);
             }
             for (const key in data) {
-                if (key.toLowerCase() === inputClass) {
+                if (key.toLowerCase() === inputClass || key.toLowerCase() === inputClassDate) {
                 const spanCardUp = createElementForm('span',`card__${inputClass}-value`, element);
                 spanCardUp.innerText = data[key];
                 }
@@ -224,21 +225,21 @@ class Modal{
         const mainDataForm = createElementForm('div', 'modal-form__main-data',parent )
 
         const labelName= createElementForm('label','name__label', mainDataForm);
-        labelName.innerText = `visiter's name`;
+        labelName.innerText = `Ім'я відвідувача:`;
         const inputName = createElementForm('input','name__input', labelName);
         inputName.type ='text';
 
         const labelPurpose = createElementForm('label','purpose__label', mainDataForm);
-        labelPurpose.innerText = `Purpose of the visit`;
+        labelPurpose.innerText = `Ціль візиту:`;
         const inputPurpose = createElementForm('input','purpose__input', labelPurpose);
         inputPurpose.type ='text';
 
         const labelDescription = createElementForm('label','description__label', mainDataForm);
-        labelDescription.innerText = `Short description of the visit`;
+        labelDescription.innerText = `Короткий опис візиту:`;
         const inputDescription = createElementForm('textarea','description__input', labelDescription);
 
         const labelUrgency = createElementForm('label','urgency__label', mainDataForm);
-        labelUrgency.innerText = 'The urgency of the visit:';
+        labelUrgency.innerText = 'Терміновість візиту:';
         const selectUrgencies= createElementForm('select','urgency__select', labelUrgency);
         urgency.forEach(urgency => {
             const optionUrgency = createElementForm('option','urgency__option',selectUrgencies);
@@ -360,14 +361,17 @@ class Visit {
         card.addEventListener('click', (e) => {
             let saveCard = e.currentTarget;
             const idCard = e.currentTarget.dataset.id;
+            const cardMoreInfo = document.querySelector(`.card__more[data-id = "${idCard}"]`);
             if(e.target.classList.contains('card__button-update')){
-                const cardMoreInfo = document.querySelector('.card__more');
                 if(!cardMoreInfo){
-                    this.moreInformation(card,buttonMore);
+                    this.moreInformation(card);
+                } else {
+                    cardMoreInfo.style.display = 'block';
                 }
                 buttonMore.style.display ='none';
                 buttonHide.style.display = 'none';
                 buttonUpdate.style.display = 'none';
+
                 replaceSpan(card.children);
 
 
@@ -399,14 +403,18 @@ class Visit {
             }
 
             if(e.target.classList.contains('card__button-more')){
-                this.moreInformation(card);
+                if(!cardMoreInfo){
+                    this.moreInformation(card);
+                } else {
+                    cardMoreInfo.style.display = 'block';
+                }
                 buttonMore.style.display ='none';
                 buttonHide.style.display = 'block';
+
             }
 
             if(e.target.classList.contains('card__button-hide')){
-                const cardMoreInfo = document.querySelector('.card__more');
-                cardMoreInfo.remove();
+                cardMoreInfo.style.display ='none';
                 buttonMore.style.display = 'block';
                 buttonHide.style.display = 'none';
             }
@@ -426,6 +434,7 @@ class Visit {
         <p class="card__description">Короткий опис:<span class='card__description-value'> ${this.description}</span></p>
         <p class="card__urgency">Терміновість: <span class='card__urgency-value'>${this.urgency}</span></p>`);
         this.specificInformation(cardMore);
+        return cardMore;
     }
     specificInformation(card){
     }
@@ -452,7 +461,7 @@ class VisitCardiologist extends Visit{
     specificInformation(card){
         card.insertAdjacentHTML('beforeend', `<p class="card__mass">Індекс ваги: <span class='card__mass-value'>${this.mass}</span></p>
         <p class="card__pressure">Звичний артеріальний тиск: <span class='card__pressure-value'>${this.pressure}</span></p>
-        <p class="card__diseases">перенесені захворювання серцево-судинної системи:<span class='card__diseases-value'> ${this.diseases}</span></p>
+        <p class="card__diseases">Перенесені захворювання серцево-судинної системи:<span class='card__diseases-value'> ${this.diseases}</span></p>
         <p class="card__age">Вік: <span class='card__age-value'>${this.age}</span></p>`);
     }
 }

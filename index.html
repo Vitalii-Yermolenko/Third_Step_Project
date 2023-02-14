@@ -1,47 +1,64 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="./main.css">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="stylesheet" href="./norm.css" />
+    <link rel="stylesheet" href="./main.css" />
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300;400&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Signika+Negative:wght@300;600&display=swap"
+      rel="stylesheet"
+    />
     <title>Cards</title>
-</head>
-<body>
-<div class="wrapper">
-    <header class="header">
-        <img class="header__image" src="./img/istockphoto-1182998204-612x612.jpg" alt="logo">
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <i class="bx bx-shield-plus">HOUSE</i>
         <button class="header__button">Log in</button>
         <button class="header__button--visit">Create Visit</button>
-    </header>
-    <div class="filterForm">
-        <input class="filterForm__input" type="text", placeholder="Search by name or header" id="1">
+      </header>
+      <div class="filterForm">
+        <i class="bx bx-search"></i>
+        <input
+          class="filterForm__input"
+          type="text"
+          ,
+          placeholder="Search by name or header"
+          id="1"
+        />
         <select class="urgency" id="2">
-            <option>All</option>
-            <option>High</option>
-            <option>Normal</option>
-            <option>Low</option>
+          <option>All</option>
+          <option>High</option>
+          <option>Normal</option>
+          <option>Low</option>
         </select>
         <select name="visitPass" id="3">
-            <option>All</option>
-            <option>Passed</option>
-            <option>Awaits</option>
+          <option>All</option>
+          <option>Passed</option>
+          <option>Awaits</option>
         </select>
-    </div>
-    <main>
-<!--        <div class="no&#45;&#45;items">No items have been added</div>-->
-    <div class="main"></div>
+      </div>
+      <main>
+        <!--        <div class="no&#45;&#45;items">No items have been added</div>-->
+        <div class="main"></div>
         <div class="field-card">
-            <ul class="field-card__list">
-
-            </ul>
+          <ul class="field-card__list"></ul>
         </div>
-    </main>
-
-</div>
-<!--<script type="module" src="./js/login.js"></script>-->
-<script type="module" src="./js/test2.js"></script>
-</body>
+      </main>
+    </div>
+    <script src="./js/script.js"></script>
+  </body>
 </html>
-
